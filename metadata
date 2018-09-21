@@ -1,0 +1,10 @@
+https://academicgraph.blob.core.windows.net/graph-2016-02-05/index.html
+
+To create the domain specfic subset files:
+------------------------------------------
+* First, if not using 2016KDD.., use filterPAA.py (or, more correctly, filterPapers.py - name was updated in later sets) to filter Papers.txt to get ...SelectedAuthors.txt (This is currently on the EC2 instance)
+* Then use filterMAG.py  to filter PaperAuthorAffiliations.txt
+* Then use filterMAGauthor.py to filter Authors.txt...
+* Then, use getEthnicitiesTextmap.py to query textmap for the author ethnicities
+
+Good luck!
