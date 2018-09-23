@@ -61,7 +61,7 @@ def SwapPapers(fromAuthor,toAuthor,aid2pids,pid2aids,nSwaps=1):
 def GenLookupDicts(paaFile):
     '''   
     Generating the pid->aid and aid->pid lookup dicts
-    (i.e. the "aid2pids" and "pid2aids" dicts require for Collabs and other functions)
+    (i.e. the "aid2pids" and "pid2aids" dicts required for Collabs and other functions)
 
     paaFile is the relevant "PaperAuthorAffiliations" file
     '''
@@ -75,3 +75,28 @@ def GenLookupDicts(paaFile):
     pid2aids=dict(zip(foo.index,[eval(foo[tmp]) for tmp in foo.index]))
 
     return aid2pids,pid2aids
+
+def Aid2Affil(paaFile):
+
+    df=pd.read_csv(paaFile,'\t',names=['aid','affid'],usecols=[1,2]).dropna()
+    return dict(df.values)
+
+def FiltPid2Aids(pid2aids,aidList):
+    '''
+    processes the pid2aids structure
+    leaving only valid authors (i.e. those in aidList)
+    '''
+
+    permitted=set(aidList)
+    foo=[(tmp[0],list(permitted.intersection(tmp[1]))) for tmp in pid2aids.items()]
+    return {tmp[0]:tmp[1] for tmp in foo if len(tmp[1])>0}
+
+def FiltAid2Pids(aid2pids,aidList):
+    '''
+    processes the aid2pids structure
+    leaving only valid authors (i.e. those in aidList)
+    '''
+             
+    permitted=set(aidList)
+    return { tmp[0]:tmp[1] for tmp in aid2pids.items() if tmp[0] in permitted }
+

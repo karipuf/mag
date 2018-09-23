@@ -12,7 +12,7 @@ from numpy.random import choice
 ###########
 
 # Number of author pairs to perform the swap for
-nSwapPairs=6320 # 10%!!
+nSwapPairs=1650 # 10%!!
 nSwapPapers=1 # Papers to swap per author
 truncreg=re.compile('^\s*(\S).*?(\s{0,1}\S+)\s*$')
 ethDict=pickle.load(open("ethnicitiesMech.pkl",'rb'))
@@ -24,15 +24,20 @@ ethDict=pickle.load(open("ethnicitiesMech.pkl",'rb'))
 print("Loading and prepping data...")
 
 aid2pids,pid2aids=GenLookupDicts('MechanicalEngineeringSelectedPaperAuthorAffiliations.txt')
+aid2affil=Aid2Affil('MechanicalEngineeringSelectedPaperAuthorAffiliations.txt')
+
+# Only retaining useful names
+aidList=list(aid2affil.keys())
+aid2pids=FiltAid2Pids(aid2pids,aidList)
+pid2aids=FiltPid2Aids(pid2aids,aidList)
 
 # Processing author file
 au=pd.read_csv("MechanicalEngineeringSelectedAuthors.txt",'\t',names=['aid','name'])
+au=au[au.aid.isin(set(aidList))]
 au['trunc']=au['name'].apply(lambda tmp: ''.join(truncreg.findall(tmp)[0]))
-au['eth']=au['name'].apply(lambda tmp: name2ethnicity(tmp,ethDict))
-aideth=au[['aid','eth']].set_index('aid')['eth']
 
-# Generating individual diversities for each author
-au['diversity']=au['aid'].apply(lambda aid: Gini([aideth[tmp] for tmp in Collabs(aid,aid2pids,pid2aids)]))
+# Generating individual affiliation diversity for each author
+au['diversity']=au['aid'].apply(lambda aid: Gini([aid2affil[tmp] for tmp in Collabs(aid,aid2pids,pid2aids)]))
 
 #############################################
 # Preparing the "ambiguate" the authors
