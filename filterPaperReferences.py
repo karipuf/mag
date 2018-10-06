@@ -1,3 +1,5 @@
+# Used to create the filtered "..SelectedPaperReferences.txt" files which only contain PIDs from a particular domain
+# Used in the citation distribution study
 from sys import stdout
 import pandas as pd
 import re
